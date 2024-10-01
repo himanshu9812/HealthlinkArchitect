@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ambulance Booking</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://harvesthq.github.io/chosen/chosen.css">
+  <script src="https://harvesthq.github.io/chosen/chosen.jquery.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+  <style>
+    select {
+      height: 40px;
+      width: 100%;
+    }
+
+    html,
+    body {
+      font-family:'PT Serif';
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+     /* background-color: #f0f0f0; */
+      background-color: #333;
+     /* Fallback background color */
+      background-size: 70%;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+
+    .container {
+      display: flex;
+      margin-top: 10%;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+
+    .booking-form {
+      width: 40%;
+      margin: 1rem;
+      padding: 20px;
+      border: 2px solid red;
+      border-radius: 2%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .booking-form a {
+      color: white;
+      text-decoration: none;
+      background-color: #007BFF;
+      padding: 10px 20px;
+      margin: 0.5rem;
+      transition: background-color 0.3s ease;
+      font-size: 20px;
+      /* border: none; */
+      border-radius: 10px;
+      display: block;
+      width: 6rem;
+      height: 4rem;
+      text-align: center;
+    }
+
+    .booking-form a:hover {
+      background-color: #0056b3;
+    }
+
+    .map-container {
+      margin: 1rem;
+      width: 50%;
+    }
+
+    #map {
+      width: 60%;
+      height: 80vh;
+      border: 2px solid black;
+      border-radius: 2%;
+    }
+
+    .direction-arrow {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(0deg);
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 2rem;
+      background-color: #192024;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+
+    header a {
+      text-decoration: none;
+      color: white;
+      margin: 1rem;
+      position: fixed;
+      right: 0;
+      background-color: #007BFF;
+      border: none;
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+ .booking-form a{
+  font-size: 18px;
+}
+    header a:hover {
+      background-color: #0056b3;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="time"] {
+      width: 90%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 1.2rem;
+    }
+
+    input[type="radio"] {
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      background-color: #192024;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin-bottom: 0;
+      color: white;
+    }
+
+    footer a {
+      text-decoration: none;
+      margin: 0 10px;
+      color: yellow;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    #output {
+      padding: 20px;
+      background: #dadada;
+      display: none;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 200px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+      padding: 10px;
+      overflow-y: auto;
+      max-height: 200px;
+      /* Limit the height of the dropdown */
+    }
+
+    .dropdown-content label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .dropdown-content label input {
+      margin-right: 5px;
+    }
+
+    .dropdown.active .dropdown-content {
+      display: block;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .hospital-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .hospital-list li {
+      margin-bottom: 10px;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.5);
+      transition: opacity 200ms;
+      visibility: hidden;
+      opacity: 0;
+
+      &.light {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .cancel {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        cursor: default;
+      }
+
+      &:target {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+
+    .popup {
+      margin: 1rem auto;
+      background-color: #f4f6f7;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      text-align: center;
+      padding: 30px;
+      transition: transform 0.3s, border-color 0.3s;
+      border: 2px solid #333;
+      display: grid;
+    }
+
+    .popup:hover {
+      transform: scale(1.05);
+      border-color: #555;
+    }
+
+    .popup h1 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .popup .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .popup #select-map {
+      height: 14rem;
+      width: 100%;
+    }
+
+    .popup .form-group .forget-pass {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .popup label {
+      display: block;
+      font-weight: bold;
+      margin: 5px;
+      color: #555;
+    }
+
+    .popup input[type="text"],
+    .popup input[type="tel"],
+    input[type="password"] {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .popup button {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 1rem;
+    }
+
+    .popup button:hover {
+      background-color: #555;
+    }
+
+    .popup .close {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 20px;
+      right: 20px;
+      opacity: 0.5;
+      transition: all 200ms;
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+      color: rgb(26 66 109);
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .popup .error-message {
+      color: #ff0000;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    @media screen and (max-width: 768px),
+    (max-height: 1024px),
+    (orientation: portrait) {
+
+      #map {
+        width: 100%;
+        /* Make the map take up the full width of the screen */
+        height: 50vh;
+        /* Reduce the map height on small screens */
+      }
+
+      .booking-form {
+        width: 30%;
+        /* Widen the form for better readability on small screens */
+        margin: 1rem;
+        /* Center the form horizontally */
+      }
+
+      .dropdown-content {
+        display: none;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<script defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbwtf_dATwlZNIgG6UqcVrPwsFheNK0os&libraries=places"></script>
+
+<body>
+  
+  <header>
+    <!-- <p id="username" style="display: none;">{{username}}</p>
+    <p id="password" style="display: none;">{{password}}</p> -->
+    <b>Ambulance Booking</b>
+    <a href="{{ url_for('index')}}">Logout</a>
+
+  </header>
+  <div id="hospitalModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Nearby Hospitals</h2>
+      <ul id="hospitalList"></ul>
+    </div>
+  </div>
+  <div class="container">
+    <div class="map-container">
+      <div id="map"></div>
+      {% for items in devices %}
+      <span id="variable" value="{{items}}">{{items}}</span>
+      {% endfor %}
+    </div>
+    <div class="booking-form" id="myForm">
+      <div>
+        <a href="#popup1">Accident / Emergency</a>
+        <a href="#popup2">Scheduled Booking</a>
+      </div>
+      <div>
+        <a href="#popup3">Book For Someone Else</a>
+        <a href="#popup4">Direct Hospital Booking</a>
+      </div>
+      <div>
+        <a href="#popup5">Check Hospital Status</a>
+      </div>
+    </div>
+    <div id="popup1" class="overlay">
+      <div class="popup">
+        <h2>Confirm SOS Booking</h2>
+        <a class="close" href="#">&times;</a>
+        <!-- <div id="credentials"></div> -->
+        <form id="sos" method="POST" action="{{ url_for('user_booking', username=username, password=password) }}">
+
+          <input type="hidden" name="username" value="{{ username }}">
+          <input type="hidden" name="password" value="{{ password }}">
+          <input type="hidden" name="book-method" value="full">
+          <input type="hidden" name="book-person" value="self">
+          <input type="hidden" name="reason" value="Emergency">
+          <!-- <label class="index" for="reason">Select Reason:</label>
+              <select id="reason" name="reason">
+                  <option value="">Choose an option</option>
+                  <option value="ORTHO">Orthopedic</option>
+                  <option value="CARDIO">Cardiology</option>
+                  <option value="GYNE">Gyneology</option>
+                  <option value="PULMO">Pulmonology</option>
+                  <option value="OPTHALMO">Ophthalmologist</option>
+                  <option value="SURGERY">SURGERY</option>
+                  <option value="MEDICINE">MEDICINE</option>
+              </select> -->
+          <!-- <label for="bed_avail"><input type="checkbox" id="bed_avail" name="bed_avail" value="bed_avail">Avail Bed (check if yes)</label> -->
+          <input type="hidden" id="latitude" name="latitude" required />
+
+          <input type="hidden" id="longitude" name="longitude" required />
+
+          <input type="hidden" id="location" name="location" required />
+
+          <input type="hidden" id="date" name="date" />
+
+          <input type="hidden" id="time" name="time" />
+
+          <!-- <label for="scheduled" class="index">Select Hospital:</label class="index"> -->
+          <!-- <div id="output"></div>
+                  <input type="hidden" id="selected_hospitals" name="selected_hospitals" > -->
+          <!-- <select id="hosp_name" name="hosp_name" multiple class="chosen-select">
+                    {% for hosp_name in hospital_names %}
+                      <option value="{{ hosp_name }}">{{ hosp_name }}</option>
+                    {% endfor %}
+                  </select> -->
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup2" class="overlay">
+      <div class="popup">
+        <h2>Book an Ambulance</h2>
+        <a class="close" href="#">&times;</a>
+        <!-- <div id="credentials"></div> -->
+        <form id="user_booking" method="POST"
+          action="{{ url_for('user_booking', username=username, password=password) }}">
+
+          <input type="hidden" name="username" value="{{ username }}">
+          <input type="hidden" name="password" value="{{ password }}">
+          <input type="hidden" name="book-method" value="full">
+          <input type="hidden" name="book-person" value="self">
+
+          <label class="index" for="reason">Select Reason:</label>
+          <select id="reason" name="reason">
+            <option value="">Choose an option</option>
+            <option value="ORTHO">Orthopedic</option>
+            <option value="CARDIO">Cardiology</option>
+            <option value="GYNE">Gyneology</option>
+            <option value="PULMO">Pulmonology</option>
+            <option value="OPTHALMO">Ophthalmologist</option>
+            <option value="SURGERY">SURGERY</option>
+            <option value="MEDICINE">MEDICINE</option>
+          </select>
+          <label for="bed_avail"><input type="checkbox" id="bed_avail" name="bed_avail" value="bed_avail">Avail Bed?
+            (check if yes)</label>
+          <input type="hidden" id="latitude1" name="latitude" required />
+
+          <input type="hidden" id="longitude1" name="longitude" required />
+
+          <input type="hidden" id="location1" name="location" required />
+
+          <input type="hidden" id="date1" name="date" />
+
+          <input type="hidden" id="time1" name="time" />
+
+          <label for="scheduled" class="index">Select Hospital:</label class="index">
+          <!-- <div id="output"></div>
+                  <input type="hidden" id="selected_hospitals" name="selected_hospitals" > -->
+          <select id="hosp_name" name="hosp_name" multiple class="chosen-select">
+            {% for hosp_name in hospital_names %}
+            <option value="{{ hosp_name }}">{{ hosp_name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup3" class="overlay">
+      <div class="popup">
+        <h2>Book an Ambulance for Someomne Else</h2>
+        <a class="close" href="#">&times;</a>
+        <!-- <div id="credentials"></div> -->
+        <form id="user_booking" method="POST"
+          action="{{ url_for('user_booking', username=username, password=password) }}">
+
+          <input type="hidden" name="username" value="{{ username }}">
+          <input type="hidden" name="password" value="{{ password }}">
+          <input type="hidden" name="book-method" value="full">
+          <input type="hidden" name="book-person" value="else">
+          <div style="display: flex;">
+            <div>
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+              <label for="phone">Phone:</label>
+              <input type="tel" id="phone" name="phone" required>
+            </div>
+          </div>
+          <div style="display: flex;">
+            <div>
+              <label class="index" for="reason">Select Reason:</label>
+              <select id="reason2" name="reason">
+                <option value="">Choose an option</option>
+                <option value="ORTHO">Orthopedic</option>
+                <option value="CARDIO">Cardiology</option>
+                <option value="GYNE">Gyneology</option>
+                <option value="PULMO">Pulmonology</option>
+                <option value="OPTHALMO">Ophthalmologist</option>
+                <option value="SURGERY">SURGERY</option>
+                <option value="MEDICINE">MEDICINE</option>
+              </select>
+            </div>
+            <label for="bed_avail"><input type="checkbox" id="bed_avail" name="bed_avail" value="bed_avail">Avail Bed?
+              (check if yes)</label>
+          </div>
+
+          <input type="hidden" id="latitude3" name="latitude" required />
+
+          <input type="hidden" id="longitude3" name="longitude" required />
+
+          <input type="hidden" id="location3" name="location" required />
+
+          <input type="hidden" id="date3" name="date" />
+
+          <input type="hidden" id="time3" name="time" />
+
+          <label for="scheduled" class="index">Select Hospital:</label class="index">
+          <!-- <div id="output"></div>
+                  <input type="hidden" id="selected_hospitals" name="selected_hospitals" > -->
+          <select id="hosp_name2" name="hosp_name" multiple class="chosen-select">
+            {% for hosp_name in hospital_names %}
+            <option value="{{ hosp_name }}">{{ hosp_name }}</option>
+            {% endfor %}
+          </select>
+          <label for="location">Select Location:</label>
+          <div id="select-map"></div>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup4" class="overlay">
+      <div class="popup">
+        <h2>Book Direct Hospital Appointment</h2>
+        <a class="close" href="#">&times;</a>
+        <!-- <div id="credentials"></div> -->
+        <form id="direct-booking" method="POST"
+          action="{{ url_for('user_booking', username=username, password=password) }}">
+
+          <input type="hidden" name="username" value="{{ username }}">
+          <input type="hidden" name="password" value="{{ password }}">
+          <input type="hidden" name="book-method" value="direct">
+          <input type="hidden" name="book-person" value="self">
+
+          <label class="index" for="reason">Select Reason:</label>
+          <select id="reason1" name="reason">
+            <option value="">Choose an option</option>
+            <option value="ORTHO">Orthopedic</option>
+            <option value="CARDIO">Cardiology</option>
+            <option value="GYNE">Gyneology</option>
+            <option value="PULMO">Pulmonology</option>
+            <option value="OPTHALMO">Ophthalmologist</option>
+            <option value="SURGERY">SURGERY</option>
+            <option value="MEDICINE">MEDICINE</option>
+          </select>
+          <label for="ambulance_avail"><input type="checkbox" id="ambulance_avail" name="ambulance_avail"
+              value="ambulance_avail">Need Ambulance? (check if yes)</label>
+          <label for="bed_avail"><input type="checkbox" id="bed_avail" name="bed_avail" value="bed_avail">Avail Bed?
+            (check if yes)</label>
+          <input type="hidden" id="latitude2" name="latitude" required />
+
+          <input type="hidden" id="longitude2" name="longitude" required />
+
+          <input type="hidden" id="location2" name="location" required />
+
+          <input type="hidden" id="date2" name="date" />
+
+          <input type="hidden" id="time2" name="time" />
+
+          <label for="scheduled" class="index">Select Hospital:</label class="index">
+          <!-- <div id="output"></div>
+                    <input type="hidden" id="selected_hospitals" name="selected_hospitals" > -->
+          <select id="hosp_name1" name="hosp_name">
+            <option value="">Choose an option</option>
+            {% for hosp_name in hospital_names %}
+            <option value="{{ hosp_name }}">{{ hosp_name }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup5" class="overlay">
+      <div class="popup">
+        <h2>Bed Availability</h2>
+        <a class="close" href="#">&times;</a>
+        <form id="bed_checking" method="POST"
+          action="{{ url_for('hospital_data_show', username=username, password=password) }}">
+          <label class="index" for="hospital">Select Hospital:</label class="index">
+          <select id="hospital" name="hospital">
+            <option value="">Choose an option</option>
+            {% for hospital in hospital_names %}
+            <option value="{{ hospital }}">{{ hospital }}</option>
+            {% endfor %}
+          </select>
+
+          <label class="index" for="medicalNeed">Select Medical Need:</label class="index">
+
+          <select id="medicalNeed" name="medicalNeed">
+            <option value="">Choose an option</option>
+            <option value="ORTHO">Orthopedic</option>
+            <option value="CARDIO">Cardiology</option>
+            <option value="GYNE">Gyneology</option>
+            <option value="PULMO">Pulmonology</option>
+            <option value="OPTHALMO">Ophthalmologist</option>
+            <option value="SURGERY">SURGERY</option>
+            <option value="MEDICINE">MEDICINE</option>
+            <option value="EMERGENCY">EMERGENCY</option>
+          </select>
+
+          <!-- <button id="submitRequest" type="submit">Submit</button> -->
+        </form>
+
+        <div id="bedCount">Available Beds: <span id="count">{{ available_beds }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; Copyright @ LifeSaver Architech
+    <a href="{{ url_for('contactus')}}">Contact Us</a>
+    <a href="{{ url_for('aboutus')}}">About Us</a>
+  </footer>
+
+  <script>
+    // var username = document.getElementById('username').innerHTML
+    // var password = document.getElementById('password').innerHTML
+    function fetchData() {
+      var hospital = document.getElementById('hospital').value;
+      var selectedOption = document.getElementById('medicalNeed').value;
+
+      fetch(`/hospital_data_show?hospital_name=${hospital}&medical_category=${selectedOption}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data); // Log the response from the server
+          document.getElementById('count').innerHTML = data.data;
+          // Do something with the data, e.g., update the UI
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Fetch data when the page loads
+    window.onload = fetchData;
+
+    // Fetch data when the hospital or medicalNeed values change
+    document.getElementById('hospital').addEventListener('change', fetchData);
+    document.getElementById('medicalNeed').addEventListener('change', fetchData);
+    $('#user_booking').submit(function () {
+      if ($('#reason').val() == "") { // Check for an empty string
+        alert('Please select a reason.');
+        return false; // Prevent form submission
+      }
+
+      if ($('#hosp_name').val() == null) {
+        alert('Please select at least one hospital.');
+        return false; // Prevent form submission
+      }
+    });
+    $('#direct-booking').submit(function () {
+      if ($('#reason1').val() == "") { // Check for an empty string
+        alert('Please select a reason.');
+        return false; // Prevent form submission
+      }
+
+      if ($('#hosp_name1').val() == "") {
+        alert('Please select at least one hospital.');
+        return false; // Prevent form submission
+      }
+    });
+
+
+    $('#bed_checking').submit(function () {
+      if ($('#hospital').val() === "") { // Check for an empty string
+        alert('Please select an hospital.');
+        return false; // Prevent form submission
+      }
+
+      if ($('#medicalNeed').val() == "") {
+        alert('Please select a medical need.');
+        return false; // Prevent form submission
+      }
+    });
+
+    locationInput = document.getElementById('location');
+    locationInput1 = document.getElementById('location1');
+    locationInput2 = document.getElementById('location2');
+    locationInput3 = document.getElementById('location3');
+    function getLiveAddress(lat, long) {
+      var latitude = lat;
+      var longitude = long;
+      const latLng = new google.maps.LatLng(lat, long);
+      const geocoder = new google.maps.Geocoder();
+      return new Promise((resolve, reject) => {
+        geocoder.geocode({ 'location': latLng }, function (results, status) {
+          if (status === 'OK') {
+            if (results[0]) {
+              const formattedAddress = results[0].formatted_address;
+              // console.log(formattedAddress)
+              resolve(formattedAddress);
+            } else {
+              reject('Address not found');
+            }
+          } else {
+            reject('Geocoder failed due to: ' + status);
+          }
+        });
+      });
+    }
+
+    function getAndFillLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async function (position) {
+          var locationInput = document.getElementById("location");
+          var latitudeInput = document.getElementById("latitude");
+          var longitudeInput = document.getElementById("longitude");
+          var locationInput1 = document.getElementById("location1");
+          var latitudeInput1 = document.getElementById("latitude1");
+          var longitudeInput1 = document.getElementById("longitude1");
+          var locationInput2 = document.getElementById("location2");
+          var latitudeInput2 = document.getElementById("latitude2");
+          var longitudeInput2 = document.getElementById("longitude2");
+
+
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+
+          latitudeInput.value = latitude;
+          longitudeInput.value = longitude;
+          latitudeInput1.value = latitude;
+          longitudeInput1.value = longitude;
+          latitudeInput2.value = latitude;
+          longitudeInput2.value = longitude;
+          try {
+            const formattedAddress = await getLiveAddress(latitude, longitude);
+            locationInput.value = formattedAddress;
+            locationInput1.value = formattedAddress;
+            locationInput2.value = formattedAddress;
+            // console.log("helllo"+formattedAddress);
+          } catch (error) {
+            console.error(error);
+          }
+          fetch('/get_address')
+            .then(response => response.json())
+            .then(data => {
+              const addressList = data.result;
+              // console.log('Inside', addressList);
+              // Assuming addressList is an array of addresses
+              for (const address of addressList) {
+                // Extract the second part of the address (index 1)
+                let destinationAddress = address[1]
+                let currentLocation = ''
+                if (locationInput != null) {
+                  currentLocation = locationInput.value
+                }
+                // console.log("Address" + currentLocation)
+                // Assuming the second parameter is the current location obtained from getLiveAddress
+                calculateDrivingDistance(currentLocation, destinationAddress);
+              }
+            })
+            .catch(error => console.log('Error:', error));
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    // Call the function to fill the form on page load
+    window.addEventListener("load", getAndFillLocation);
+    document.addEventListener("DOMContentLoaded", function () {
+      const ambulanceForm = document.getElementById("ambulanceForm");
+      // console.log(ambulanceForm)
+      // Set the current date and time in the respective input fields
+      const currentDate = new Date();
+      const dateInput = document.getElementById("date");
+      const timeInput = document.getElementById("time");
+      const dateInput1 = document.getElementById("date1");
+      const timeInput1 = document.getElementById("time1");
+      const dateInput2 = document.getElementById("date2");
+      const timeInput2 = document.getElementById("time2");
+      const dateInput3 = document.getElementById("date3");
+      const timeInput3 = document.getElementById("time3");
+
+      // Format the date as "YYYY-MM-DD" and the time as "HH:MM" with leading zeros
+      const formattedDate = currentDate.toISOString().split("T")[0];
+      const formattedTime = currentDate.toTimeString().slice(0, 5);
+
+      dateInput.value = formattedDate;
+      timeInput.value = formattedTime;
+      dateInput1.value = formattedDate;
+      timeInput1.value = formattedTime;
+      dateInput2.value = formattedDate;
+      timeInput2.value = formattedTime;
+      dateInput3.value = formattedDate;
+      timeInput3.value = formattedTime;
+      // console.log(dateInput.value)
+
+      ambulanceForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Fetch form values (including the automatically set date and time)
+        const phone = document.getElementById("phone").value;
+        const location = document.getElementById("location").value;
+        const location1 = document.getElementById("location1").value;
+        const location2 = document.getElementById("location2").value;
+        const date = dateInput.value;
+        const time = timeInput.value;
+        const bookingDetails = `Location: ${location}\nDate: ${date}\nTime: ${time}\nBooking Type: ${bookingType}`;
+        alert("Booking Details:\n" + bookingDetails);
+      });
+    });
+
+    $(document).ready(function () {
+      $(".chosen-select").chosen();
+    });
+
+    // var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    // var selectedHospitalsInput = document.getElementById('selected_hospitals');
+
+    // checkboxes.forEach(function (checkbox) {
+    //   checkbox.addEventListener('change', function () {
+    //     var selectedHospitals = [];
+    //     checkboxes.forEach(function (cb) {
+    //       if (cb.checked) {
+    //         selectedHospitals.push(cb.value);
+    //       }
+    //     });
+    //     selectedHospitalsInput.value = selectedHospitals.join(',');
+    //   });
+    // });
+
+    const currentLocation = document.getElementById('location').value;
+    var hospitalsList = [];
+
+    function calculateDrivingDistance(origin, destination) {
+      var service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING',
+      }, function (response, status) {
+        if (status === 'OK') {
+          if (response.rows.length > 0 && response.rows[0].elements.length > 0) {
+            var distanceObject = response.rows[0].elements[0].distance;
+            // console.log(distanceObject); // Log the distance object
+            if (distanceObject && distanceObject.text) {
+              var distance = distanceObject.text;
+              var parsedDistance = parseInt(distance);
+
+              if (!isNaN(parsedDistance) && parsedDistance < 5.0) {
+                // console.log('Driving Distance between ' + origin + ' and ' + destination + ': ' + distance);
+                hospitalsList.push({
+                  address: destination,
+                  distance: parsedDistance
+                });
+                // console.log(hospitalsList);
+
+                // Display selected hospitals in the modal
+                updateHospitalModal();
+              }
+            } else {
+              console.error('Invalid distance format. Check the structure of the distance object.');
+            }
+          } else {
+            console.error('Invalid response format. Check the structure of the response object.');
+          }
+        } else {
+          console.error('Error calculating driving distance: ' + status);
+        }
+      });
+    }
+
+    function updateHospitalModal() {
+      var modal = document.getElementById('hospitalModal');
+      var closeButton = document.getElementsByClassName('close')[0];
+      var hospitalList = document.getElementById('hospitalList');
+
+      // Clear previous entries
+      hospitalList.innerHTML = '';
+
+      // Populate the modal with selected hospitals and distances
+      hospitalsList.forEach(function (hospital) {
+        var listItem = document.createElement('li');
+        listItem.textContent = hospital.address + ' - ' + hospital.distance + ' km';
+        hospitalList.appendChild(listItem);
+      });
+
+      // Show the modal
+      modal.style.display = 'block';
+
+      // Close the modal when the close button is clicked
+      closeButton.onclick = function () {
+        modal.style.display = 'none';
+      }
+
+      // Close the modal if clicked outside the modal
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      }
+    }
+
+    //Outer Map
+    var map;
+    var markers = [];
+    var userMarker;
+
+    // Fetch the list of devices from the backend
+    fetch('/get_list')
+        .then(response => response.json())
+        .then(data => {
+            // Access the list in JavaScript
+            const myList = data.result;
+            // console.log("Inside " + myList)
+            initMap(myList);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function initMap(val) {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 0, lng: 0 },
+            zoom: 17 // Adjust the zoom level as needed
+        });
+
+        var customMarkerIcon = {
+            url: 'https://www.dropbox.com/scl/fi/rgwuk78u85o9u7k0hwhds/ambulance_marker.png?rlkey=qb2omsoc02547dheon9vmkyih&dl=1', // Replace with the actual path to your image
+            scaledSize: new google.maps.Size(40, 40), // Adjust the size as needed
+        };
+
+        val.forEach(function (item) {
+            const lat = parseFloat(item[1]);
+            const lon = parseFloat(item[2]);
+
+            const marker = new google.maps.Marker({
+                position: { lat: lat, lng: lon },
+                map: map,
+                icon: customMarkerIcon,
+                title: 'Device: ' + item[0] + '\nLocation: ' + item[1] + ', ' + item[2]
+            });
+
+            markers.push(marker);
+        });
+
+        // Create a marker for the user's current location
+        userMarker = new google.maps.Marker({
+            map: map,
+            animation: google.maps.Animation.DROP,
+            icon: {
+                url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png', // Blue marker icon for user location
+                // scaledSize: new google.maps.Size(50, 50) // Increase the size of the user marker
+            },
+            zIndex: 1000 // Set a high zIndex for the user marker
+        });
+
+        // Update the user's location marker continuously
+        function updateLocation() {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var userLatLng = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                // Update the marker position
+                userMarker.setPosition(userLatLng);
+                // Center the map on the user's location
+                map.setCenter(userLatLng);
+            }, function (error) {
+                console.error('Error getting current location:', error);
+            });
+        }
+
+        // Call the updateLocation function every 5 seconds
+        setInterval(updateLocation, 5000);
+    }
+
+
+
+
+
+    console.log('Location:', locationInput3);
+    var map1;
+    var marker1;
+
+    // Initialize the map
+    function initializeMap() {
+      map1 = new google.maps.Map(document.getElementById('select-map'), {
+        center: { lat: 22.978624, lng: 87.747803 },
+        zoom: 8
+      });
+
+      // Add click event listener to the map
+      map1.addListener('click', async function (event) {
+        if (marker1) {
+          marker1.setMap(null);  // Remove existing marker
+        }
+        marker1 = new google.maps.Marker({
+          position: event.latLng,
+          map: map1
+        });
+        var lat = event.latLng.lat();
+        var lng = event.latLng.lng();
+        console.log('Latitude:', lat, 'Longitude:', lng);
+        // Store lat and lng values in hidden form fields for submission
+        document.getElementById('latitude3').value = lat;
+        document.getElementById('longitude3').value = lng;
+        const formattedAddress = await getLiveAddress(lat, lng);
+        locationInput3.value = formattedAddress;
+        console.log('Location:', formattedAddress);
+      });
+    }
+
+    // Load the Google Maps API with the callback to initialize the map
+    function loadMapScript() {
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDbwtf_dATwlZNIgG6UqcVrPwsFheNK0os&callback=initializeMap';
+      document.head.appendChild(script);
+    }
+
+    // Call the loadMapScript function to load the map
+    loadMapScript();
+
+  </script>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }}">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+</body>
+
+</html>

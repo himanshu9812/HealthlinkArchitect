@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bed Availability</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'PT Serif';
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* height: 100vh; */
+            margin-top: 8.5rem;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .container123 {
+            background-color: #2c2c2c;
+            border-radius: 20px;
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.3);
+            width: 550px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .container123 h1 {
+            color: #007bff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .index {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        select {
+            background-color: #1a1a1a;
+            border: 1px solid #555;
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.25rem;
+            padding: 15px 25px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #bedCount {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #007bff;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #192024;
+            color: white;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container123 {
+                width: 90%;
+                padding: 30px;
+            }
+
+            .container123 h1 {
+                font-size: 1.5rem;
+            }
+
+            .index, select {
+                font-size: 1rem;
+            }
+
+            button {
+                font-size: 1.1rem;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container123">
+        <h1>Bed Availability</h1>
+        <form method="POST" action="/hospital_data_show">
+            <label class="index" for="hospital">Select Hospital:</label class="index">
+            <select id="hospital" name="hospital">
+                {% for hospital in hospital_names %}
+                    <option value="{{ hospital }}">{{ hospital }}</option>
+                {% endfor %}
+            </select>
+            
+            
+            
+            <!-- <select id="hospital" name="hospital">
+                <option value="AMRI -Dhakuria">AMRI -Dhakuria</option>
+                <option value="AMRI -Mukundapur">AMRI -Mukundapur</option>
+                <option value="All Asia Medical Institute (Harsh Medical)">All Asia Medical Institute (Harsh Medical)</option>
+                <option value="Anandalok Hospital">Anandalok Hospital</option>
+                <option value="B P Poddar Hospital &medical Research">B P Poddar Hospital &medical Research</option>
+                <option value="Behala Balananda Brahmachari Hospital">Behala Balananda Brahmachari Hospital</option>
+                <option value="Baine Hospital">Baine Hospital</option>
+                <option value="B M Birla Heart Research Institue">B M Birla Heart Research Institue</option>
+                <option value="Binayak Multi speciality Hospital">Binayak Multi speciality Hospital</option>
+                <option value="Charring Cross Nursing Home">Charring Cross Nursing Home</option>
+                <option value="Desun Hospital & Heart Institute">Desun Hospital & Heart Institute</option>
+                <option value="Institute of Neuroscience">Institute of Neuroscience</option>
+                <option value="IRIS Health Services Limited">IRIS Health Services Limited</option>
+                <option value="KPC Medical College & Hospital">KPC Medical College & Hospital</option>
+                <option value="Kothari Medical Centre">Kothari Medical Centre</option>
+                <option value="Medica Superspecialty Hospital">Medica Superspecialty Hospital</option>
+                <option value="Mission of Merc Hospital">Mission of Mercy Hospital</option>
+                <option value="Naba Jiban Hospital Private Limited">Naba Jiban Hospital Private Limited</option>
+                <option value="Park Clinic">Park Clinic</option>
+                <option value="Peerless Hospital">Peerless Hospital</option>
+            </select> -->
+
+            <label class="index" for="medicalNeed">Select Medical Need:</label class="index">
+
+            <!-- <select id="medicalNeed" name="medicalNeed">
+                {% for category in medical_categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select> -->
+            <select id="medicalNeed" name="medicalNeed">
+                <option value="ORTHO">Orthopedic</option>
+                <option value="CARDIO">Cardiology</option>
+                <option value="GYNE">Gyneology</option>
+                <option value="PULMO">Pulmonology</option>
+                <option value="OPTHALMO">Ophthalmologist</option>
+                <option value="SURGERY">SURGERY</option>
+                <option value="MEDICINE">MEDICINE</option>
+                <option value="EMERGENCY">EMERGENCY</option> Add more medical needs as needed
+            </select>
+
+            <button id="submitRequest" type="submit">Submit Request</button>
+        </form>
+
+        <div id="bedCount">Available Beds: <span id="count">{{ available_beds }}</span></div>
+    </div>
+</body>
+<footer>
+    &copy; Copyright @ LifeSaver Architech
+    <a href="{{ url_for('contactus')}}">Contact Us</a>
+    <a href="{{ url_for('aboutus')}}">About Us</a>
+</footer>
+
+</html>
+
+<script>
+    const hospitalSelect = document.getElementById("hospital");
+    const medicalNeedSelect = document.getElementById("medicalNeed");
+    const addBedButton = document.getElementById("addBed");
+    const subtractBedButton = document.getElementById("subtractBed");
+    const bedCountSpan = document.getElementById("count");
+    const submitRequestButton = document.getElementById("submitRequest");
+
+    let selectedHospital = hospitalSelect.value;
+    let selectedMedicalNeed = medicalNeedSelect.value;
+    let availableBeds = bedAvailability[selectedHospital][selectedMedicalNeed];
+
+    bedCountSpan.textContent = availableBeds;
+
+    hospitalSelect.addEventListener("change", function () {
+        selectedHospital = hospitalSelect.value;
+        availableBeds = bedAvailability[selectedHospital][selectedMedicalNeed];
+        bedCountSpan.textContent = availableBeds;
+    });
+
+    medicalNeedSelect.addEventListener("change", function () {
+        selectedMedicalNeed = medicalNeedSelect.value;
+        availableBeds = bedAvailability[selectedHospital][selectedMedicalNeed];
+        bedCountSpan.textContent = availableBeds;
+    });
+
+    addBedButton.addEventListener("click", function () {
+        if (availableBeds >= 0) {
+            availableBeds++;
+            bedCountSpan.textContent = availableBeds;
+        }
+    });
+
+    subtractBedButton.addEventListener("click", function () {
+        if (availableBeds > 0) {
+            availableBeds--;
+            bedCountSpan.textContent = availableBeds;
+        }
+    });
+
+    // Handle Submit Request button click
+    submitRequestButton.addEventListener("click", function () {
+        if (availableBeds > 0) {
+            // You can place your code here to submit the request
+            alert("Request submitted successfully!");
+            availableBeds--; // Reduce the available bed count by 1
+            bedCountSpan.textContent = availableBeds;
+        } else {
+            alert("No beds available. Request cannot be submitted.");
+        }
+    });
+</script>
+</body>
+
+</html>

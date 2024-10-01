@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Location Update</title>
+    <meta http-equiv="refresh" content="10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'PT Serif';
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            /* display: flex; */
+            /* flex-direction: column;
+            align-items: center; */
+            /* height: 100vh; */
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        form{
+            display: flex;
+            justify-content: center;
+        }
+        .form-content{
+            display: flex;
+            flex-direction: column;
+            border: 1px;
+            border-radius: 20px;
+            background-color: #2c2c2c;
+            text-align: center;
+            width: 60%;
+        }
+        .form-label {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .form-control {
+            background-color: #1a1a1a;
+            border: 1px solid #555;
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        .location-container {
+            background-color: #2c2c2c;
+            border-radius: 20px;
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.3);
+            width: 550px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .location-container h1 {
+            color: #007bff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            background-color: #1a1a1a;
+            border: 1px solid #555;
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 8px;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.25rem;
+            padding: 15px 25px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #192024;
+            color: white;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .location-container {
+                width: 90%;
+                padding: 30px;
+            }
+
+            .location-container h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-label,
+            .form-control {
+                font-size: 1rem;
+            }
+
+            button {
+                font-size: 1.1rem;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Update Location</h1>
+    <form id="locationForm" method="POST" action="/update_location">
+        <div class="form-content">
+            <div class="form-input">
+                <label for="username" class="form-label">username:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-input">
+                <label for="password" class="form-label">password:</label>
+                <input type="text" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="submit">
+                <button type="submit">SUBMIT</button>
+            </div>
+    
+    
+            <!-- <label for="latitude">Latitude:</label> -->
+            <input type="hidden" id="latitude" name="latitude" readonly>
+            <br>
+            <!-- <label for="longitude">Longitude:</label> -->
+            <input type="hidden" id="longitude" name="longitude" readonly>
+            <br>
+        </div>
+        
+
+    </form>
+    <script>
+        function updateLocation() {
+            // Use geolocation API to get actual coordinates
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Update the input fields with the latitude and longitude values
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+
+                    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+                    // Automatically submit the form after updating the values
+                    document.getElementById("locationForm").submit();
+                });
+            } else {
+                console.error("Geolocation is not available in this browser.");
+            }
+        }
+
+        // Start updating the location on page load
+        updateLocation();
+
+        // Update location every 10 seconds
+        // setInterval(function() {
+        //     location.reload();
+        // }, 10000);
+        setInterval(updateLocation, 10000);
+    </script>
+    <footer>
+        &copy; Copyright @ LifeSaver Architech
+        <a href="{{ url_for('contactus')}}">Contact Us</a>
+        <a href="{{ url_for('aboutus')}}">About Us</a>
+    </footer>
+</body>
+
+</html>

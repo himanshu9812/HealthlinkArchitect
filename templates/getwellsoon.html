@@ -1,0 +1,303 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Well Soon</title>
+    <script defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbwtf_dATwlZNIgG6UqcVrPwsFheNK0os&libraries=places&loading=async&callback=initMap"></script>
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            background-image: url('https://www.dropbox.com/scl/fi/3sj9eajlddcz5hkwetj32/getwellsoon.jpeg?rlkey=veyw9ex9221bxul6ux1f64p2i&dl=1'); 
+            background-size: 80%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center center;
+        } */
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            /* justify-content: space-between; Add this property */
+            background-color: #222222; /* Fallback background color */
+            background-size: 100%;
+
+            position: relative;
+        }
+
+        .msg {
+            text-align: center;
+            color: #222222;
+            margin: 0 auto;
+            background: #C9E8FF;
+            width: 70%;
+            padding: 2%;
+            border-radius: 10px;
+            border: 2px solid #348E81;
+        }
+
+        .msg ul {
+            list-style: none;
+            padding-inline-start: 0;
+        }
+
+        .large-bold {
+            font-size: large;
+            font-weight: bold;
+        }
+
+        .button-container {
+            text-align: center; /* Center align buttons horizontally */
+            margin: auto; /* Add margin to move the buttons down */
+            /* margin-right: auto; Add margin to move the buttons left */
+            width: 50%;
+        }
+
+        button {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #348E81;
+            font-weight: bolder;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #44b3a3; /* Change background color on hover */
+            transform: scale(1.1); /* Scale up the button on hover */
+        }
+
+        p {
+            text-align: center;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 2rem;
+            background-color: #222222;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        header a{
+            text-decoration: none;
+            color: white;
+            margin: 1rem;
+            position: fixed;
+            right: 0;
+            background-color: #348E81;
+            border: none;
+            font-weight: bolder;
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        header a:hover {
+            background-color: #44b3ab;
+        }
+
+        .container {
+            display: flex;
+            /* flex-direction: column; */
+            margin: 5% 5%;
+            height: 80%;
+
+            /* justify-content: space-between; */
+            /* Adjust this as needed */
+            /* align-items: flex-start; */
+            /* Adjust this as needed */
+        }
+
+        .map-container {
+            margin: 2rem auto;
+            width: 50%;
+        }
+
+        #map {
+            /* Adjust width and other styles for your map as needed */
+            width: 100%;
+            height: 100%;
+            /* margin: 2rem auto; */
+            border: 2px solid #348E81;
+            border-radius: 2%;
+            
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: #222222;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+            color: white;
+        }
+
+        footer a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #348E81;
+        }
+
+        /* Media query for screens with a maximum width of 768px, a maximum height of 1024px, and portrait orientation */
+        @media screen and (max-width: 768px) and (max-height: 1024px) and (orientation: portrait) {
+            footer {
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <b>User Map</b>
+        <a href="{{ url_for('index')}}">Logout</a>
+    </header>
+    <div class="container">
+    <div class="map-container">
+        <div id="map"></div>
+        {% for items in devices %}
+          <span id="variable" value="{{items}}">{{items}}</span>
+        {% endfor %}
+        <input type="hidden" id="user_latitude" name="user_latitude" data-value="{{user_latitude}}" readonly />
+        <input type="hidden" id="user_longitude" name="user_longitude" data-value="{{user_longitude}}"/>
+        <input type="hidden" id="ambulance_latitude" name="ambulance_latitude" data-value="{{ambulance_latitude}}"/>
+        <input type="hidden" id="ambulance_longitude" name="ambulance_longitude" data-value="{{ambulance_longitude}}"/>
+    </div>
+    <div class="button-container">
+    <p style="display: none;">
+        {% if username %}
+            {{username}}
+        {% endif %}
+        {% if password %}
+            {{password}}
+        {% endif %}
+    </p>
+    <div class="msg">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for message in messages %}
+                        {% set parts = message.split('<br>', 1) %}
+                        {% if parts|length > 1 %}
+                            <li class="flash-message">
+                                <h2>{{ parts[0] | safe }}</h2><br>
+                                <span class="large-bold">{{ parts[1] | safe }}</span>
+                            </li>
+                        {% else %}
+                            <li class="flash-message"><h2>{{ message | safe }}</h2></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <form action="/getwellsoon/{{ username }}/{{password}}" method="POST">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
+        <input type="hidden" name="action" id="action" value="">
+        <button type="button" name="cancel_booking" onclick="confirmAction('cancel')">Cancel Booking</button>
+        <button type="button" name="rebooking" onclick="confirmAction('rebooking')">ReBooking</button>
+    </form>
+        <!-- {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for message in messages %}
+                        <li class="flash-message">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %} -->
+    </div>
+    </div>
+    <footer>
+        &copy; Copyright @ LifeSaver Architech
+        <a href="{{ url_for('contactus')}}">Contact Us</a>
+        <a href="{{ url_for('aboutus')}}">About Us</a>
+      </footer>
+
+    <script>
+
+
+       document.getElementById('action').value=action
+        function confirmAction(action) {
+            if(action=='cancel') {
+                var confirmation = confirm("Are you sure you want to cancel the booking?");
+                if (confirmation) {
+                    // If the user confirms, set the action value and submit the form
+                    document.getElementById('action').value = action;
+                    document.forms[0].submit();  // Submit the form
+                }
+            }
+            else if(action=='rebooking') {
+                var confirmation1=confirm("Are you sure to redirect?")
+                if(confirmation1)
+                {
+                    document.getElementById('action').value=action;
+                    document.forms[0].submit();
+                }
+            }
+        }
+
+        
+
+        var map;
+        var directionsService;
+        var directionsRenderer;
+
+        async function initMap() {
+            // Retrieve latitude and longitude from data attributes
+            var user_latitude = parseFloat(document.getElementById("user_latitude").getAttribute("data-value"));
+            var user_longitude = parseFloat(document.getElementById("user_longitude").getAttribute("data-value"));
+            var ambulance_latitude = parseFloat(document.getElementById("ambulance_latitude").getAttribute("data-value"));
+            var ambulance_longitude = parseFloat(document.getElementById("ambulance_longitude").getAttribute("data-value"));
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: {
+                    lat: ambulance_latitude,
+                    lng: ambulance_longitude
+                },
+                zoom: 11,
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            var startLatLng = new google.maps.LatLng(ambulance_latitude, ambulance_longitude);
+            var endLatLng = new google.maps.LatLng(user_latitude, user_longitude);
+
+            var request = {
+                origin: startLatLng,
+                destination: endLatLng,
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                }
+            });
+        }
+
+        setInterval(function () {
+            location.reload();
+        }, 39000);
+    </script>
+</body>
+</html>

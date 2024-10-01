@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revolutionizing Emergency Response</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbwtf_dATwlZNIgG6UqcVrPwsFheNK0os&loading=async&libraries=places&callback=initMap"
+        async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <style>
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #222222;
+            color: white;
+        }
+
+        main {
+            text-align: center;
+            padding: 50px;
+            display: none;
+            /* Initially hide the main section */
+        }
+
+        h1.display-4 {
+            color: beige;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+
+        .feature-div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features {
+            background-color: #A9D5DD;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1 1 calc(50% - 20px);
+            /* Allows for two features per row with spacing */
+            box-sizing: border-box;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .features h2 {
+            font-size: 22px;
+            color: #222222;
+            margin: 0 0 10px 0;
+        }
+
+        .features p {
+            font-size: 16px;
+            color: #222222;
+            margin: 0;
+        }
+
+        .features::before {
+            content: url('https://img.icons8.com/ios-filled/50/000000/cube.png');
+            margin-right: 15px;
+        }
+
+        header {
+            background-color: #222;
+            height: 300px;
+        }
+
+        div.container-fluid {
+
+            background-color: #222222;
+        }
+
+        .navbar.navbar-expand-lg.navbar-dark.bg-dark {
+            background-color: #222222 !important;
+            padding-top: 8px;
+            padding-bottom: 0px;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: white !important;
+            padding-right: 20px;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            /* Increased font size for the brand */
+        }
+
+        .navbar-brand:hover,
+        .nav-link:hover {
+            color: #b3b3b3 !important;
+        }
+
+        .btn-primary {
+            background-color: #348E81;
+            border-color: #348E81;
+            margin-left: 6px;
+            margin-right: 24px;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a756a;
+            border: #348e81;
+        }
+
+        .btn-link {
+            color: #348E81;
+        }
+
+        .btn-link:hover {
+            color: #348E81;
+        }
+
+        .display-4 {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 150%;
+            font-family: sans-serif;
+            /* Increased font size for the main heading */
+        }
+
+        .pricing-container {
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .pricing-plans {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .plan {
+            background-color: #C9E8FF;
+            color: black;
+            border-radius: 10px;
+            padding: 20px;
+            width: 380px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan h2 {
+            margin: 0 0 10px 0;
+        }
+
+        .plan p {
+            margin: 0 0 20px 0;
+        }
+
+        .price {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .price span {
+            font-size: 0.5em;
+            color: black;
+        }
+
+        /* General styles for the entire page */
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        /* Overlay styling */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* Popup styling */
+        .popup {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            text-align: left;
+        }
+
+        /* Close button styling */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Form input styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="number"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Submit button styling */
+        button[type="submit"] {
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Forget password link styling */
+        .forget-pass {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .forget-pass a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .forget-pass a:hover {
+            text-decoration: underline;
+        }
+
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .pricing-plans ul li::before {
+            content: "✔";
+            /* Unicode for checkmark */
+            position: absolute;
+            left: 0;
+            color: #000000;
+            /* Change this color as needed */
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #348E81;
+            border: none;
+            color: white;
+            padding: 4px 80px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #286d63;
+        }
+
+        .Free {
+            background-color: #C9E8FF;
+            color: #000000;
+            font-weight: 600;
+            border: 1PX SOLID black;
+        }
+
+        .Free:hover {
+            background-color: #b9dbf4;
+        }
+
+        .discover-section {
+            text-align: center;
+            padding: 100px 20px;
+            background-color: #222222;
+            border: 1px solid black;
+        }
+
+        .discover-section h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .discover-section button {
+            background-color: #348E81;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .discover-section button:hover {
+            background-color: #235e55;
+            border: 1px solid #235e55;
+        }
+
+        /* Section 2: FAQ */
+        .faq-section {
+            display: flex;
+            padding: 50px;
+            margin: 0px 60px;
+            background-color: #2A3233;
+            border: 1px solid black;
+        }
+
+        .faq-intro {
+            flex: 1;
+            max-width: 300px;
+            margin-right: 40px;
+        }
+
+        .faq-intro h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .faq-intro h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #cccccc;
+        }
+
+        .faq-intro p {
+            color: #aaaaaa;
+        }
+
+        .faq-list {
+            flex: 3;
+        }
+
+        .faq-list h4 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .faq-list p {
+            color: #aaaaaa;
+            margin-bottom: 20px;
+        }
+        #map {
+            height: 17rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: #192024;
+            /* position: absolute; */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+            color: white;
+        }
+
+        footer a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: yellow;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background-color: #f5ecec;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .forget-pass {
+            margin-top: 10px;
+        }
+
+        .forget-pass a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .forget-pass a:hover {
+            text-decoration: underline;
+        }
+
+        #accidentsChart {
+            height: 220px;
+            /* width: 200px; */
+        }
+
+
+        .holder {
+            background-color: #9fc9b2;
+            width: 300px;
+            height: 370px;
+            overflow: hidden;
+            padding: 1rem;
+            font-family: Helvetica;
+            font-size: 1rem;
+            text-emphasis-color: black;
+        }
+
+        .holder .mask {
+            width: 300px;
+            height: 290px;
+            overflow: hidden;
+        }
+
+        .holder h2 {
+            font-size: 1.2rem;
+            color: black;
+        }
+
+        .holder ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .holder ul li {
+            padding: 0.5rem 0;
+            color: black;
+        }
+
+        .holder ul li a {
+            color: darkred;
+            text-decoration: none;
+        }
+
+        .analytics {
+            display: flex ;
+            /* flex-direction: column; */
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .wrapper{
+            margin: 35px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #Red-Alert {
+            opacity: 0;
+        }
+
+        #Accident-Analytics {
+            opacity: 0;
+        }
+
+        #app-feedback {
+            margin-left: 2000px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column;
+            }
+
+            .feature-div {
+                flex-direction: column;
+            }
+
+            .pricing-plans {
+                flex-direction: column;
+            }
+
+            .plan {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
+            #header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            .btn-primary,
+            .discover-section button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+        
+    </style>
+
+</head>
+
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Life Saver Connect</a> <!-- Left-aligned brand -->
+            <div class="mx-auto">
+                <ul class="navbar-nav d-flex flex-row justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="feature-link">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Benefits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-flex">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Login
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="loginDropdown">
+                            <li><a class="dropdown-item" href="#" data-target="popup4">Patient</a></li>
+                            <li><a class="dropdown-item" href="#" data-target="popup5">Ambulance</a></li>
+                            <li><a class="dropdown-item" href="#" data-target="popup6">Hospital</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" id="registerDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Register
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="registerDropdown">
+                            <li><a class="dropdown-item" href="#" data-target="popup1">Patient</a></li>
+                            <li><a class="dropdown-item" href="#" data-target="popup2">Ambulance</a></li>
+                            <li><a class="dropdown-item" href="#" data-target="popup3">Hospital</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h2>Patient Signup</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/user_reg">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="user_name" name="name" required>
+                    <label for="address">Location:</label>
+                    <input type="text" id="user_address" name="address" required>
+                    <label for="userAge">Age:</label>
+                    <input type="number" id="user_userAge" name="userAge" required>
+                    <label for="phone">Phone No.:</label>
+                    <input type="text" id="user_phone" name="phone" required>
+                    <label for="userEmail">Email:</label>
+                    <input type="text" id="user_userEmail" name="userEmail" required>
+                    <label for="username">User Name:</label>
+                    <input type="text" id="user_username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="user_password" name="password" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup 2: Ambulance Signup -->
+    <div id="popup2" class="overlay">
+        <div class="popup">
+            <h2>Ambulance Signup</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/ambulance_reg">
+                <div class="form-group">
+                    <label for="driverName">Name of the Driver:</label>
+                    <input type="text" id="ambulance_driverName" name="driverName" required>
+                    <label for="carNumber">Car Number:</label>
+                    <input type="text" id="ambulance_carNumber" name="carNumber" required>
+                    <label for="driverAge">Age:</label>
+                    <input type="number" id="ambulance_driverAge" name="driverAge" required>
+                    <label for="phone">Phone No.:</label>
+                    <input type="text" id="ambulance_phone" name="phone" required>
+                    <label for="userEmail">Email:</label>
+                    <input type="text" id="ambulance_userEmail" name="userEmail" required>
+                    <label for="panNumber">PAN Number:</label>
+                    <input type="text" id="ambulance_panNumber" name="panNumber" required>
+                    <label for="license">Driving License:</label>
+                    <input type="text" id="ambulance_license" name="license" required>
+                    <label for="username">User Name:</label>
+                    <input type="text" id="ambulance_username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="ambulance_password" name="password" required>
+                    <input type="hidden" id="ambulance_Latitude" name="Latitude" readonly>
+                    <input type="hidden" id="ambulance_longitude" name="longitude" readonly>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup 3: Hospital Signup -->
+    <div id="popup3" class="overlay">
+        <div class="popup">
+            <h2>Hospital Signup</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/hospital_reg">
+                <div class="form-group">
+                    <label for="inchargeName">Name of the Incharge:</label>
+                    <input type="text" id="hospital_inchargeName" name="inchargeName" required>
+                    <label for="hospitalLocation">Location:</label>
+                    <input type="text" id="hospital_hospitalLocation" name="hospitalLocation" required>
+                    <label for="hospitalName">Name of the Hospital:</label>
+                    <input type="text" id="hospital_hospitalName" name="hospitalName" required>
+                    <label for="userEmail">Email:</label>
+                    <input type="text" id="hospital_userEmail" name="userEmail" required>
+                    <label for="username">User Name:</label>
+                    <input type="text" id="hospital_username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="hospital_password" name="password" required>
+                    <input type="hidden" id="hospital_latitude" name="latitude" readonly>
+                    <input type="hidden" id="hospital_longitude" name="longitude" readonly>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup 4: Patient Login -->
+    <div id="popup4" class="overlay">
+        <div class="popup">
+            <h2>Patient Login</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/user_login">
+                <div class="form-group">
+                    <label for="username">User Name:</label>
+                    <input type="text" id="username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <div class="forget-pass">
+                <a href="#">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup 5: Ambulance Login -->
+    <div id="popup5" class="overlay">
+        <div class="popup">
+            <h2>Ambulance Login</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/ambulance_login">
+                <div class="form-group">
+                    <label for="username">User Name:</label>
+                    <input type="text" id="ambulance_username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="ambulance_password" name="password" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <div class="forget-pass">
+                <a href="#">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup 6: Hospital Login -->
+    <div id="popup6" class="overlay">
+        <div class="popup">
+            <h2>Hospital Login</h2>
+            <a class="close" href="#">&times;</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/hospital_login">
+                <div class="form-group">
+                    <label for="username">User Name:</label>
+                    <input type="text" id="hospital_username" name="username" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="hospital_password" name="password" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <div class="forget-pass">
+                <a href="#">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+    <div id="outer1">
+        <header class="d-flex justify-content-center align-items-center text-center" id="header">
+            <div>
+                <h1 class="display-4">Revolutionizing Emergency <br> Response</h1>
+                <div class="mt-4">
+                    <!-- <a class="btn btn-primary me-2" href="#">Learn More</a> -->
+                    <a class="btn btn-link text-light" href="#" id="learn-more-link">Learn More →</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Popup 1: Patient Signup -->
+
+        <!-- 
+<div id="intro" class="text-center my-5">
+    <h1>LifeSaver Connect</h1>
+    <p>Saving Lives...</p>
+</div> -->
+
+    </div>
+    <main id="main-content">
+        <h1 style="color: #fff;">Key Features of AAHBS</h1>
+
+        <div class="feature-div">
+            <div class="features">
+                <h2>GPS Integration</h2>
+                <p>Dispatches the nearest ambulance using GPS technology</p>
+            </div>
+            <div class="features">
+                <h2>Real-time Communication</h2>
+                <p>Seamless communication between hospitals, drivers, and dispatchers</p>
+            </div>
+            <div class="features">
+                <h2>Swift Response Times</h2>
+                <p>Cutting down emergency response times for faster assistance</p>
+            </div>
+            <div class="features">
+                <h2>Bed Availability Management</h2>
+                <p>Ensuring prompt bed availability and coordination during emergencies</p>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="analytics" id="analytics">
+        <div class="wrapper">
+            <div id="Red-Alert" class="text-center">
+                <h1 style="color: #fff;">Red Alert Zones</h1>
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div id="Accident-Analytics" class="text-center">
+                <h1 style="color: #fff;">Accidents Analysis</h1>
+                <canvas id="accidentsChart"></canvas>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="holder" id="app-feedback">
+                <h2><b><u>Our App Feedback</u></b></h2>
+                <ul id="ticker01">
+                    {% for feedback in feedback_data %}
+                    <li id="review-li"><span><i><b>User:</b></i> {{ feedback['user']
+                            }}</span><br><span><i><b>Rating:</b></i> {{
+                            feedback['rating'] }} Star</span> <span><i><b>Feedback:</b></i> {{ feedback['feedback_text']
+                            }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+
+
+    <!-- PRICING TABLE -->
+    <div id="outer2">
+        <div class="pricing-container">
+            <h1 style="color: #fff;">Choose Your Plan</h1>
+            <div class="pricing-plans">
+                <div class="plan free-plan">
+                    <h2>FREE</h2>
+                    <p>Ideal for individuals or small organizations</p>
+                    <p class="price">$0</p>
+                    <ul>
+                        <li>Basic ambulance booking</li>
+                        <li>Limited hospital communication</li>
+                        <li>Standard response time</li>
+                        <li>Email support</li>
+                    </ul>
+                    <button class="Free">Continue with Free</button>
+                </div>
+                <div class="plan basic-plan">
+                    <h2>BASIC</h2>
+                    <p>Great for medium-sized organizations</p>
+                    <p class="price">$29<span>/month</span></p>
+                    <ul>
+                        <li>All features of FREE plan</li>
+                        <li>Priority ambulance dispatch</li>
+                        <li>Enhanced hospital communication</li>
+                        <li>Reduced response time</li>
+                        <li>24/7 phone and email support</li>
+                    </ul>
+                    <button>Try the Basic plan</button>
+                </div>
+                <div class="plan pro-plan">
+                    <h2>PRO</h2>
+                    <p>Perfect for large enterprises and hospitals</p>
+                    <p class="price">$59<span>/month</span></p>
+                    <ul>
+                        <li>All features of BASIC plan</li>
+                        <li>Emergency ambulance dispatch</li>
+                        <li>Advanced hospital coordination</li>
+                        <li>Fastest response time</li>
+                        <li>Dedicated account manager</li>
+                    </ul>
+                    <button>Try the PRO plan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISCOVER MORE -->
+
+        <div class="discover-section">
+            <h1 style="color: #fff;">Cutting-edge Technology for Faster Emergency Care</h1>
+            <button>Discover More</button>
+        </div>
+
+        <!-- FAQ -->
+
+        <div class="faq-section">
+            <div class="faq-intro">
+                <h2>FAQ</h2>
+                <h3>Common questions</h3>
+                <p>Here are some of the most common questions that we get.</p>
+            </div>
+            <div class="faq-list">
+                <h4>How does AAHBS determine the nearest ambulance for dispatch?</h4>
+                <p>AAHBS uses GPS technology to identify the location of available ambulances and dispatch the nearest
+                    one
+                    to the emergency location.</p>
+
+                <h4>How does AAHBS ensure prompt bed availability in hospitals during emergencies?</h4>
+                <p>AAHBS fosters seamless communication between hospitals, drivers, and dispatchers to coordinate bed
+                    availability in real-time and ensure prompt admission for patients.</p>
+
+                <h4>Can users track the location of the dispatched ambulance in real-time?</h4>
+                <p>Yes, users can track the location of the dispatched ambulance in real-time through the AAHBS
+                    platform.
+                </p>
+
+                <h4>Is AAHBS available 24/7 for emergency bookings?</h4>
+                <p>Yes, AAHBS operates 24/7 to provide swift and efficient emergency response services.</p>
+
+                <h4>How does AAHBS improve overall emergency response times?</h4>
+                <p>AAHBS automates the ambulance dispatch process using GPS technology, significantly reducing response
+                    times and improving overall efficiency in emergency situations.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+    </div>
+    <footer id="footer">
+        &copy; Copyright @ LifeSaver Architech
+        <a href="{{ url_for('contactus')}}">Contact Us</a>
+        <a href="{{ url_for('aboutus')}}">About Us</a>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        // JavaScript to handle showing and hiding popups based on clicked links
+        document.querySelectorAll('a[data-target]').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                event.preventDefault();
+                var target = event.target.getAttribute('data-target');
+                document.querySelectorAll('.overlay').forEach(function (overlay) {
+                    overlay.style.display = 'none';
+                });
+                document.getElementById(target).style.display = 'flex';
+            });
+        });
+
+        // Close popups when clicking on the close button or outside the popup
+        document.querySelectorAll('.overlay').forEach(function (overlay) {
+            overlay.addEventListener('click', function (event) {
+                if (event.target === overlay || event.target.classList.contains('close')) {
+                    overlay.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('home').addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default anchor behavior
+            //document.getElementById('header').style.height = '100vh';
+            document.getElementById('Red-Alert').style.opacity = 0;
+            document.getElementById('Accident-Analytics').style.opacity = 0;
+            document.getElementById('app-feedback').style.marginLeft = '2000px';
+            document.getElementById('analytics').style.justifyContent = 'space-evenly';
+            document.getElementById('outer1').style.display = 'block';
+            document.getElementById('outer2').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('footer').style.position = 'relative';
+            document.querySelector('.analytics').style.display='flex';
+            document.querySelector('.analytics').style.flexDirection='row';
+        });
+
+        document.getElementById('learn-more-link').addEventListener('click', function (event) {
+            event.preventDefault();
+            document.getElementById('main-content').style.display = 'block';
+            //document.getElementById('header').style.height = '300px';
+        })
+
+        document.getElementById('feature-link').addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default anchor behavior
+            // document.getElementById('header').style.height = '300px';
+            document.getElementById('Red-Alert').style.opacity = 1;
+            document.getElementById('Accident-Analytics').style.opacity = 1;
+            document.getElementById('app-feedback').style.marginLeft = 0;
+            document.getElementById('outer1').style.display = 'none';
+            document.getElementById('outer2').style.display = 'none';
+            document.getElementById('main-content').style.display = 'none';
+            document.querySelector('.analytics').style.flexDirection='column';
+            document.querySelector('.analytics').style.justifyContent='center';
+           // document.getElementById('footer').style.position = 'fixed';
+        });
+        function getAndFillLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function (position) {
+                    const latituteInput = document.getElementById('ambulance_Latitude');
+                    const longitudeInput = document.getElementById('ambulance_longitude');
+                    // window.onload = function() {
+                    //     var noticeBoard = document.querySelector('.notice-board');
+                    //     noticeBoard.scrollTop = noticeBoard.scrollHeight;
+                    // }
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    console.log(latitude);
+                    console.log(longitude);
+                    latituteInput.value = latitude;
+                    console.log(latituteInput);
+                    longitudeInput.value = longitude;
+                    console.log(longitudeInput);
+                }
+                )
+            }
+
+        }
+        getAndFillLocation();
+        jQuery.fn.liScroll = function (settings) {
+            settings = jQuery.extend({
+                travelocity: 0.03
+            }, settings);
+            return this.each(function () {
+                var $strip = jQuery(this);
+                $strip.addClass("newsticker")
+                var stripHeight = 1;
+                $strip.find("li").each(function (i) {
+                    stripHeight += jQuery(this, i).outerHeight(true); // thanks to Michael Haszprunar and Fabien Volpi
+                });
+                var $mask = $strip.wrap("<div class='mask'></div>");
+                var $tickercontainer = $strip.parent().wrap("<div class='tickercontainer'></div>");
+                var containerHeight = $strip.parent().parent().height();	//a.k.a. 'mask' width 	
+                $strip.height(stripHeight);
+                var totalTravel = stripHeight;
+                var defTiming = totalTravel / settings.travelocity;	// thanks to Scott Waye		
+                function scrollnews(spazio, tempo) {
+                    $strip.animate({ top: '-=' + spazio }, tempo, "linear", function () { $strip.css("top", containerHeight); scrollnews(totalTravel, defTiming); });
+                }
+                scrollnews(totalTravel, defTiming);
+                $strip.hover(function () {
+                    jQuery(this).stop();
+                },
+                    function () {
+                        var offset = jQuery(this).offset();
+                        var residualSpace = offset.top + stripHeight;
+                        var residualTime = residualSpace / settings.travelocity;
+                        scrollnews(residualSpace, residualTime);
+                    });
+            });
+        };
+        $(function () {
+            $("ul#ticker01").liScroll();
+        });
+
+        // Red Alert Map
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 22.5626, lng: 88.3630 },
+                zoom: 10
+            });
+
+            // Create a marker for the user's current location
+            var userMarker = new google.maps.Marker({
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' // Blue marker for user location
+            });
+
+            // Update the user's location marker continuously
+            function updateLocation() {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLatLng = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    // Update the marker position
+                    userMarker.setPosition(userLatLng);
+                    // Center the map on the user's location
+                    map.setCenter(userLatLng);
+                }, function (error) {
+                    console.error('Error getting current location:', error);
+                });
+            }
+
+            // Call the updateLocation function every 5 seconds
+            setInterval(updateLocation, 5000);
+
+            fetch('/get_red_alert_zones')
+                .then(response => response.json())
+                .then(redAlertZones => {
+                    // Iterate over red alert zones
+                    redAlertZones.forEach(zone => {
+                        // Define the polygon coordinates (adjust as needed)
+                        var polygonCoords = [
+                            { lat: zone.latitude + 0.01, lng: zone.longitude - 0.01 },
+                            { lat: zone.latitude - 0.01, lng: zone.longitude - 0.01 },
+                            { lat: zone.latitude - 0.01, lng: zone.longitude + 0.01 },
+                            { lat: zone.latitude + 0.01, lng: zone.longitude + 0.01 }
+                        ];
+
+                        // Create a polygon to cover the area around the pincode
+                        var polygon = new google.maps.Polygon({
+                            paths: [polygonCoords],
+                            strokeColor: '#FF0000', // Red border color
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: '#FF0000', // Red fill color
+                            fillOpacity: 0.2
+                        });
+
+                        // Set the polygon on the map
+                        polygon.setMap(map);
+                    });
+                })
+                .catch(error => console.error('Error fetching red alert zones:', error));
+        }
+
+
+        // Accident Analytics
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/get_accidents_data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Process data to extract state names for x-axis labels
+                    const processedData = processData(data);
+                    renderChart(processedData);
+                })
+                .catch(error => {
+                    console.error('Error fetching accidents data:', error);
+                    // Handle the error, e.g., display a message to the user
+                });
+        });
+
+        function processData(data) {
+            // Extract state names for x-axis labels
+            const processedData = {
+                labels: Object.keys(data).map(entry => entry),
+                datasets: [{
+                    label: 'Accidents Count',
+                    data: Object.values(data),
+                    backgroundColor: '#FF0000',
+                    borderColor: '#FF0000',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            };
+            return processedData;
+        }
+
+        function renderChart(data) {
+            try {
+                const ctx = document.getElementById('accidentsChart').getContext('2d');
+
+                const chartOptions = {
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'State'
+                            }
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Accidents Count'
+                            },
+                            reverse: true  // Set this property to true
+                        }]
+                    }
+                };
+
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: chartOptions
+                });
+            } catch (chartError) {
+                console.error('Error rendering chart:', chartError);
+                // Handle the chart rendering error, e.g., display a message to the user
+            }
+        }
+    </script>
+</body>
+
+</html>
